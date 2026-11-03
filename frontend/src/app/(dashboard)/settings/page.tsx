@@ -3,6 +3,7 @@
 import { WorkspaceGate } from "@/components/auth/workspace-gate";
 import { WorkspaceSettingsForm } from "@/components/workspaces/workspace-settings-form";
 import { WorkspaceList } from "@/components/workspaces/workspace-list";
+import { McpKeyManager } from "@/components/mcp/mcp-key-manager";
 
 export default function SettingsPage() {
   return (
@@ -11,6 +12,7 @@ export default function SettingsPage() {
         <div className="max-w-3xl space-y-8">
           <h2 className="text-2xl font-semibold">Workspace settings</h2>
           <WorkspaceSettingsForm workspace={workspace} />
+          <McpKeyManager workspaceId={workspace.id} />
           <WorkspaceList />
         </div>
       )}

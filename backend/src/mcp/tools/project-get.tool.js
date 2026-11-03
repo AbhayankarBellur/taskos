@@ -2,6 +2,7 @@ import { z } from "zod";
 import { projectService } from "../../modules/projects/project.service.js";
 import { formatMcpSuccess } from "../mcp.response.js";
 import { formatMcpError } from "../mcp.errors.js";
+import { assertMcpScope } from "../mcp.scopes.js";
 
 const toolMeta = {
   title: "Get Project",
@@ -15,6 +16,7 @@ const toolMeta = {
 export function registerProjectGetTool(mcpServer, ctx) {
   mcpServer.registerTool("project_get", toolMeta, async ({ projectId }) => {
     try {
+      assertMcpScope(ctx, "projects:read");
       const project = await projectService.get(ctx, projectId);
       return formatMcpSuccess({ project }, `Project [${project.key}] ${project.name}`);
     } catch (err) {

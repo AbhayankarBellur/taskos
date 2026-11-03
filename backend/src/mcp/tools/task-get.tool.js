@@ -2,6 +2,7 @@ import { z } from "zod";
 import { taskService } from "../../modules/tasks/task.service.js";
 import { formatMcpSuccess } from "../mcp.response.js";
 import { formatMcpError } from "../mcp.errors.js";
+import { assertMcpScope } from "../mcp.scopes.js";
 
 const toolMeta = {
   title: "Get Task",
@@ -15,6 +16,7 @@ const toolMeta = {
 export function registerTaskGetTool(mcpServer, ctx) {
   mcpServer.registerTool("task_get", toolMeta, async ({ taskId }) => {
     try {
+      assertMcpScope(ctx, "tasks:read");
       const task = await taskService.get(ctx, taskId);
       return formatMcpSuccess({ task }, `Task [${task.key}] ${task.title} (${task.status})`);
     } catch (err) {

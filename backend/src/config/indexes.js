@@ -17,9 +17,10 @@ export async function ensureIndexes(customDb) {
     db.collection("task_assessments").createIndex({ workspaceId: 1, taskId: 1, createdAt: -1 }),
     db.collection("task_events").createIndex({ workspaceId: 1, taskId: 1, createdAt: -1 }),
     db.collection("task_comments").createIndex({ workspaceId: 1, taskId: 1, createdAt: -1 }),
-    db.collection("task_dependencies").createIndex(
-      { workspaceId: 1, taskId: 1, dependsOnTaskId: 1 }, { unique: true }
-    )
+    db.collection("task_dependencies").createIndex({ workspaceId: 1, taskId: 1, dependsOnTaskId: 1 }, { unique: true }),
+    db.collection("mcp_api_keys").createIndex({ keyHash: 1 }, { unique: true }),
+    db.collection("mcp_api_keys").createIndex({ workspaceId: 1, createdBy: 1 }),
+    db.collection("mcp_audit_logs").createIndex({ workspaceId: 1, createdAt: -1 })
   ]);
   try {
     await db.collection("projects").createIndex({ workspaceId: 1, key: 1 }, { unique: true, sparse: true });

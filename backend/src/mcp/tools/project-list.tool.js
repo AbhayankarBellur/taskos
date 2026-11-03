@@ -2,6 +2,7 @@ import { z } from "zod";
 import { projectService } from "../../modules/projects/project.service.js";
 import { formatMcpSuccess } from "../mcp.response.js";
 import { formatMcpError } from "../mcp.errors.js";
+import { assertMcpScope } from "../mcp.scopes.js";
 
 const toolMeta = {
   title: "List Projects",
@@ -13,6 +14,7 @@ const toolMeta = {
 export function registerProjectListTool(mcpServer, ctx) {
   mcpServer.registerTool("project_list", toolMeta, async () => {
     try {
+      assertMcpScope(ctx, "projects:read");
       const res = await projectService.list(ctx);
       const summary = `Found ${res.projects.length} project(s) in workspace.`;
       return formatMcpSuccess({ projects: res.projects }, summary);

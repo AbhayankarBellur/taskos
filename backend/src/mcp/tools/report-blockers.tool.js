@@ -2,6 +2,7 @@ import { z } from "zod";
 import { taskService } from "../../modules/tasks/task.service.js";
 import { formatMcpSuccess } from "../mcp.response.js";
 import { formatMcpError } from "../mcp.errors.js";
+import { assertMcpScope } from "../mcp.scopes.js";
 
 const toolMeta = {
   title: "Report Blockers",
@@ -17,6 +18,7 @@ const toolMeta = {
 export function registerReportBlockersTool(mcpServer, ctx) {
   mcpServer.registerTool("report_blockers", toolMeta, async (args) => {
     try {
+      assertMcpScope(ctx, "reports:read");
       const report = await taskService.reportBlockers(ctx, args);
       const summary = `Found ${report.summary.total} blocked task(s) (${report.summary.explicit} explicit, ${report.summary.dependency} dependency).`;
       return formatMcpSuccess(report, summary);

@@ -7,6 +7,7 @@ export function createTestCtx(role = "owner") {
     userId,
     workspaceId,
     role,
+    scopes: ["projects:read", "tasks:read", "reports:read"],
     workspace: { _id: workspaceId, name: "Test Workspace" }
   };
 }

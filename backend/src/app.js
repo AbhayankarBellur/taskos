@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./modules/auth/auth.routes.js";
 import workspaceRoutes from "./modules/workspaces/workspace.routes.js";
 import projectRoutes from "./modules/projects/project.routes.js";
+import mcpKeyRoutes from "./modules/mcp-keys/mcp-key.routes.js";
 import mcpRoutes from "./mcp/mcp.routes.js";
 import { allowedOrigins } from "./config/env.js";
 import { verifyOrigin } from "./middleware/origin.middleware.js";
@@ -27,6 +28,7 @@ app.get("/health", (req, res) =>
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/workspaces", workspaceRoutes);
 app.use("/api/v1/projects", projectRoutes);
+app.use("/api/v1/mcp-keys", mcpKeyRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 

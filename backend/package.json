@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
-    "test": "node --test",
+    "test": "node --test --test-force-exit --test-concurrency=1 \"tests/**/*.test.js\"",
+    "test:all": "node --test --test-force-exit --test-concurrency=1 \"test/**/*.test.js\" \"tests/**/*.test.js\"",
     "backfill": "node scripts/backfill-project-keys.js"
   },
   "dependencies": {

@@ -1,7 +1,6 @@
 "use client";
 
 import { use, Suspense } from "react";
-import { AppShell } from "@/components/layout/app-shell";
 import { TaskManager } from "@/components/tasks/task-manager";
 import { useTasks } from "@/hooks/use-tasks";
 
@@ -24,10 +23,8 @@ export default function ProjectTasksPage({
   params
 }: { params: Promise<{ projectId: string }> }) {
   return (
-    <AppShell>
-      <Suspense fallback={<div className="text-sm text-gray-500">Loading project...</div>}>
-        <ProjectContent params={params} />
-      </Suspense>
-    </AppShell>
+    <Suspense fallback={<div className="text-sm text-gray-500">Loading project...</div>}>
+      <ProjectContent params={params} />
+    </Suspense>
   );
 }

@@ -4,6 +4,7 @@ import { transitionTask } from "./task-transition.service.js";
 import { assignTask } from "./task-assign.service.js";
 import { blockTask, unblockTask } from "./task-block.service.js";
 import { updateTask, archiveTask } from "./task-mutate.service.js";
+import { reportBlockers } from "./task-blocker.service.js";
 
 export const taskService = {
   create: createTask,
@@ -15,5 +16,6 @@ export const taskService = {
   transition: (ctx, id, st) => transitionTask(ctx, id, { status: st }),
   block: (ctx, id, reason) => blockTask(ctx, id, { reason }),
   unblock: unblockTask,
-  archive: archiveTask
+  archive: archiveTask,
+  reportBlockers
 };

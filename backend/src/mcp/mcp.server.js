@@ -1,16 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/server";
-import { registerServerInfoTool } from "./tools/server-info.tool.js";
+import { registerAllTools } from "./mcp.tools.js";
+import { resolveMcpContext } from "./mcp.context.js";
 
-export function createServerInstance() {
+const INSTRUCTIONS = "TaskOS is a project and task management platform that exposes project, task, workflow, and collaboration capabilities to AI clients through the Model Context Protocol.";
+
+export async function createServerInstance(context) {
+  const ctx = context || (await resolveMcpContext());
   const server = new McpServer(
-    {
-      name: "taskos",
-      version: "1.0.0"
-    },
-    {
-      instructions: "TaskOS is a project and task management platform that exposes project, task, workflow, and collaboration capabilities to AI clients through the Model Context Protocol."
-    }
+    { name: "taskos", version: "1.0.0" },
+    { instructions: INSTRUCTIONS }
   );
-  registerServerInfoTool(server);
+  registerAllTools(server, ctx);
   return server;
 }

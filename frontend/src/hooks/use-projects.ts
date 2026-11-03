@@ -1,20 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
-import type { Project } from "@/types/project";
+import { useCallback } from "react";
+import { projectApi } from "@/lib/project-api";
+import { useResource } from "./use-resource";
+import type { NewProject } from "@/types/project";
 
-export function useProjects() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function useProjects(workspaceId?: string) {
+  const { data, loading, error, update } = useResource(workspaceId ?? null, projectApi.list);
 
-  useEffect(() => {
-    api<Project[]>("/projects")
-      .then(setProjects)
-      .catch((err: Error) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+  const create = useCallback(async (input: NewProject) => {
+    if (!workspaceId) return;
+    const project = await projectApi.create(workspaceId, input);
+    update((d) => ({ ...d, projects: [project, ...d.projects] }));
+  }, [workspaceId, update]);
 
-  return { projects, loading, error };
+  return { projects: data?.projects ?? [], loading, error, create };
 }

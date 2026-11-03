@@ -1,11 +1,13 @@
 import "dotenv/config";
-import app from "./app.js";
+import { getEnv } from "./config/env.js";
 import { connectDB, closeDB } from "./config/database.js";
-
-const PORT = process.env.PORT || 5000;
+import { ensureIndexes } from "./config/indexes.js";
 
 try {
+  const { PORT } = getEnv();
   await connectDB();
+  await ensureIndexes();
+  const { default: app } = await import("./app.js");
   const server = app.listen(PORT, () =>
     console.log(`TaskOS API running on ${PORT}`)
   );

@@ -3,7 +3,7 @@ import type { Project } from "@/types/project";
 
 export function ProjectGrid({ projects }: { projects: Project[] }) {
   if (projects.length === 0) {
-    return <p className="text-sm text-gray-500">No projects yet.</p>;
+    return <p className="text-sm text-gray-500">No projects in this workspace yet.</p>;
   }
 
   return (

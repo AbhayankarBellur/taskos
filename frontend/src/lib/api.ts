@@ -30,7 +30,7 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     if (response.status === 401) window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
     throw new ApiError(result.message || "API request failed", response.status);
   }
-  return result.data;
+  return result.data !== undefined ? result.data : result;
 }
 
 export const send = <T>(method: string, path: string, body?: unknown) =>

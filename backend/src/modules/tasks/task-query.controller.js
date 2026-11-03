@@ -10,6 +10,6 @@ export const taskQueryController = {
     const result = await taskService.list(
       req.ctx, req.params.projectId, req.query
     );
-    res.json({ success: true, ...result });
+    res.json({ success: true, data: result, ...result });
   }
 };

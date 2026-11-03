@@ -10,11 +10,12 @@ export const BOARD_COLUMNS: Array<{ id: TaskStatus; label: string }> = [
   { id: "done", label: "Done" }
 ];
 
-export function groupTasksBySwimlane(tasks: Task[], mode: SwimlaneMode) {
-  if (mode === "none") return [{ id: "all", title: "All Tasks", tasks }];
+export function groupTasksBySwimlane(tasks: Task[] = [], mode: SwimlaneMode) {
+  const list = tasks ?? [];
+  if (mode === "none") return [{ id: "all", title: "All Tasks", tasks: list }];
 
   const groups: Record<string, { id: string; title: string; tasks: Task[] }> = {};
-  for (const t of tasks) {
+  for (const t of list) {
     let key = "Unassigned";
     let title = "Unassigned";
     if (mode === "priority") {

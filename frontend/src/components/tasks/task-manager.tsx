@@ -3,6 +3,8 @@ import { Task, TaskStatus } from "@/types/task";
 import { taskApi } from "@/lib/task-api";
 import { SwimlaneMode } from "@/lib/board-utils";
 import { useBoardFilters } from "@/hooks/use-board-filters";
+import { useWorkspaces } from "@/hooks/use-workspaces";
+import { useMembers } from "@/hooks/use-members";
 import { BoardToolbar } from "../board/board-toolbar";
 import { BoardFilters } from "../board/board-filters";
 import { KanbanBoard } from "../board/kanban-board";
@@ -19,11 +21,17 @@ export function TaskManager({ tasks, projectId, onRefresh }: { tasks: Task[]; pr
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { current } = useWorkspaces();
+  const { members } = useMembers(current?.id);
   const filters = useBoardFilters(tasks);
 
-  const handleStatus = async (task: Task, newStatus: TaskStatus) => {
-    try { setError(null); await taskApi.transition(projectId, task.id, newStatus); onRefresh(); }
-    catch (err: unknown) { setError(err instanceof Error ? err.message : "Failed to change status"); onRefresh(); }
+  const handleStatus = async (task: Task, st: TaskStatus) => {
+    try { setError(null); await taskApi.transition(projectId, task.id, st); onRefresh(); }
+    catch (err: unknown) { setError(err instanceof Error ? err.message : "Failed to update status"); }
+  };
+  const handleAssign = async (task: Task, aId: string | null) => {
+    try { await taskApi.assign(projectId, task.id, aId); onRefresh(); }
+    catch (err: unknown) { setError(err instanceof Error ? err.message : "Failed to assign"); }
   };
 
   return (
@@ -32,14 +40,10 @@ export function TaskManager({ tasks, projectId, onRefresh }: { tasks: Task[]; pr
       {error && <div className="rounded-lg bg-red-50 p-2.5 text-xs text-red-600 font-medium">{error}</div>}
       {view !== "overview" && <BoardFilters {...filters} onSearch={filters.setSearch} onStatus={filters.setStatus} onPriority={filters.setPriority} onToggleArchived={filters.setShowArchived} />}
       {view === "board" && <KanbanBoard tasks={filters.filteredTasks} swimlane={swimlane} onSelect={setSelectedTask} onStatusChange={handleStatus} />}
-      {view === "list" && (
-        <div className="rounded-lg border border-gray-200 overflow-hidden divide-y">
-          {filters.filteredTasks.map((t) => <TaskRow key={t.id} task={t} onSelect={setSelectedTask} />)}
-        </div>
-      )}
+      {view === "list" && <div className="rounded-lg border border-gray-200 overflow-hidden divide-y">{filters.filteredTasks.map((t) => <TaskRow key={t.id} task={t} onSelect={setSelectedTask} />)}</div>}
       {view === "overview" && <div className="flex flex-col gap-4"><ProjectOverviewPanel tasks={tasks} /><ProjectWorkload tasks={tasks} /></div>}
-      <Modal isOpen={createOpen} onClose={() => setCreateOpen(false)} title="Create Task"><TaskForm onSubmit={async (d) => { await taskApi.create(projectId, d); setCreateOpen(false); onRefresh(); }} /></Modal>
-      <TaskDrawer task={selectedTask} projectId={projectId} onClose={() => setSelectedTask(null)} onRefresh={onRefresh} onStatusChange={handleStatus} onToggleBlock={async (t, b) => { await (b ? taskApi.block(projectId, t.id, "Flagged via UI") : taskApi.unblock(projectId, t.id)); onRefresh(); }} onArchive={async (t) => { await taskApi.archive(projectId, t.id); onRefresh(); setSelectedTask(null); }} />
+      <Modal isOpen={createOpen} onClose={() => setCreateOpen(false)} title="Create Task"><TaskForm members={members} onSubmit={async (d) => { await taskApi.create(projectId, d); setCreateOpen(false); onRefresh(); }} /></Modal>
+      <TaskDrawer task={selectedTask} projectId={projectId} onClose={() => setSelectedTask(null)} onRefresh={onRefresh} onStatusChange={handleStatus} onToggleBlock={async (t, b) => { await (b ? taskApi.block(projectId, t.id, "Blocked via UI") : taskApi.unblock(projectId, t.id)); onRefresh(); }} onArchive={async (t) => { await taskApi.archive(projectId, t.id); onRefresh(); setSelectedTask(null); }} members={members} onAssign={handleAssign} />
     </div>
   );
 }

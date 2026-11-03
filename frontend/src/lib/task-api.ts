@@ -21,6 +21,9 @@ export const taskApi = {
   update: (pId: string, id: string, data: Partial<Task>) =>
     api<Task>(`${basePath(pId)}/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
 
+  assign: (pId: string, id: string, assigneeId: string | null) =>
+    api<Task>(`${basePath(pId)}/${id}/assignee`, { method: "PATCH", body: JSON.stringify({ assigneeId }) }),
+
   transition: (pId: string, id: string, status: TaskStatus) =>
     api<Task>(`${basePath(pId)}/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }),
 

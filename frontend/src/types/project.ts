@@ -1,5 +1,6 @@
 export type Project = {
   id: string;
+  workspaceId: string;
   name: string;
   description: string;
   color: string;
@@ -7,3 +8,5 @@ export type Project = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type NewProject = Pick<Project, "name" | "description" | "color">;

@@ -4,14 +4,22 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "test": "node --test --test-force-exit --test-concurrency=1 \"test/**/*.test.js\""
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.7.3",
     "helmet": "^8.1.0",
+    "jose": "^6.2.15",
     "mongodb": "^6.17.0",
     "zod": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=22.12"
   }
 }

@@ -2,17 +2,17 @@ import { projectService } from "./project.service.js";
 
 export const projectController = {
   create: async (req, res) => {
-    const project = await projectService.create(req.body);
+    const project = await projectService.create(req.ctx, req.body);
     res.status(201).json({ success: true, data: project });
   },
 
   list: async (req, res) => {
-    const projects = await projectService.list();
-    res.json({ success: true, data: projects });
+    const data = await projectService.list(req.ctx);
+    res.json({ success: true, data });
   },
 
   get: async (req, res) => {
-    const project = await projectService.get(req.params.id);
+    const project = await projectService.get(req.ctx, req.params.projectId);
     res.json({ success: true, data: project });
   }
 };

@@ -1,33 +1,38 @@
 import { projectRepository } from "./project.repository.js";
 import { validateProject } from "./project.validation.js";
+import { toObjectId, idString } from "../../utils/object-id.js";
+import { assertRole } from "../../utils/permissions.js";
+import { notFound } from "../../utils/app-error.js";
+
+const toProject = ({ _id, workspaceId, createdBy, ...project }) => ({
+  ...project,
+  id: idString(_id),
+  workspaceId: idString(workspaceId),
+  createdBy: idString(createdBy)
+});
 
 export const projectService = {
-  async create(data) {
+  async create(ctx, data) {
+    assertRole(ctx, "member");
     const input = validateProject(data);
+    const now = new Date();
     const project = {
-      ...input,
-      status: "active",
-      createdAt: new Date(),
-      updatedAt: new Date()
+      ...input, workspaceId: ctx.workspaceId, createdBy: ctx.userId,
+      status: "active", createdAt: now, updatedAt: now
     };
-
     const { insertedId } = await projectRepository.create({ ...project });
-    return { ...project, id: insertedId.toString() };
+    return toProject({ _id: insertedId, ...project });
   },
 
-  async list() {
-    const projects = await projectRepository.findAll();
-    return projects.map(({ _id, ...p }) => ({
-      ...p, id: _id.toString()
-    }));
+  async list(ctx) {
+    const projects = await projectRepository.findAll(ctx.workspaceId);
+    return { workspace: ctx.workspace, projects: projects.map(toProject) };
   },
 
-  async get(id) {
-    const project = await projectRepository.findById(id);
-    if (!project) throw Object.assign(
-      new Error("Project not found"), { statusCode: 404 }
-    );
-    const { _id, ...data } = project;
-    return { ...data, id: _id.toString() };
+  async get(ctx, id) {
+    const projectId = toObjectId(id, "Project");
+    const project = await projectRepository.findById(ctx.workspaceId, projectId);
+    if (!project) throw notFound("Project");
+    return toProject(project);
   }
 };

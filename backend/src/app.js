@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./modules/auth/auth.routes.js";
 import workspaceRoutes from "./modules/workspaces/workspace.routes.js";
 import projectRoutes from "./modules/projects/project.routes.js";
+import mcpRoutes from "./mcp/mcp.routes.js";
 import { allowedOrigins } from "./config/env.js";
 import { verifyOrigin } from "./middleware/origin.middleware.js";
 import { notFoundHandler } from "./middleware/not-found.middleware.js";
@@ -16,6 +17,7 @@ app.use(helmet());
 app.use(cors({ origin: allowedOrigins(), credentials: true }));
 app.use(express.json({ limit: "100kb" }));
 app.use(cookieParser());
+app.use("/mcp", mcpRoutes);
 app.use(verifyOrigin);
 
 app.get("/health", (req, res) =>

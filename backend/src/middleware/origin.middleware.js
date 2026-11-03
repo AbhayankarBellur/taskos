@@ -13,6 +13,7 @@ function requestOrigin(req) {
 }
 
 export function verifyOrigin(req, res, next) {
+  if (req.path === "/mcp" || req.originalUrl === "/mcp") return next();
   if (SAFE_METHODS.has(req.method)) return next();
   const origin = requestOrigin(req);
   if (!origin || !allowedOrigins().includes(origin)) {

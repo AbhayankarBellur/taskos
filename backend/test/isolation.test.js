@@ -12,8 +12,7 @@ before(async () => {
   bob = client(ctx.base);
   aliceWs = (await register(alice, "Alice")).workspace.id;
   bobWs = (await register(bob, "Bob")).workspace.id;
-  const res = await alice.request("POST", `/workspaces/${aliceWs}/projects`,
-    { name: "Secret Project", workspaceId: bobWs });
+  const res = await alice.request("POST", `/workspaces/${aliceWs}/projects`, { name: "Secret Project", workspaceId: bobWs });
   aliceProject = res.body.data;
 });
 after(() => ctx.stop());

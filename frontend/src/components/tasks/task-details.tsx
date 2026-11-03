@@ -6,8 +6,7 @@ import { Button } from "../ui/button";
 const nextStatuses: StatusType[] = ["todo", "in_progress", "in_review", "done"];
 
 type Props = {
-  task: Task;
-  onClose: () => void;
+  task: Task; onClose: () => void;
   onStatusChange: (status: StatusType) => void;
   onToggleBlock: (blocked: boolean) => void;
   onArchive: () => void;
@@ -37,10 +36,7 @@ export function TaskDetails({ task, onClose, onStatusChange, onToggleBlock, onAr
       <div className="flex flex-wrap gap-1 border-t pt-2">
         <span className="text-xs text-gray-400 w-full mb-1">Move to:</span>
         {nextStatuses.map((st) => (
-          <button
-            key={st} onClick={() => onStatusChange(st)}
-            className="rounded bg-gray-100 px-2 py-1 text-xs capitalize hover:bg-gray-200"
-          >
+          <button key={st} onClick={() => onStatusChange(st)} className="rounded bg-gray-100 px-2 py-1 text-xs capitalize hover:bg-gray-200">
             {st.replace("_", " ")}
           </button>
         ))}

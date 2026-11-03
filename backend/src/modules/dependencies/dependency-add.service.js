@@ -11,8 +11,7 @@ import { withTransaction } from "../../utils/transaction.js";
 export async function addDependency(ctx, taskId, input) {
   assertRole(ctx, "member");
   const { dependsOnTaskId } = addDependencySchema.parse(input);
-  const tId = toObjectId(taskId);
-  const dId = toObjectId(dependsOnTaskId);
+  const tId = toObjectId(taskId), dId = toObjectId(dependsOnTaskId);
   if (tId.equals(dId)) throw Object.assign(new Error("Self-dependency not allowed"), { statusCode: 400 });
 
   const [task, depTask] = await Promise.all([

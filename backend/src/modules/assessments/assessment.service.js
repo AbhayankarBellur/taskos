@@ -20,7 +20,6 @@ export const assessmentService = {
     const task = await taskRepository.findById(ctx.workspaceId, taskId);
     if (!task) throw Object.assign(new Error("Task not found"), { statusCode: 404 });
     assertNotArchived(task);
-
     return withTransaction(async (session) => {
       const doc = {
         workspaceId: ctx.workspaceId, projectId: task.projectId,
@@ -39,13 +38,11 @@ export const assessmentService = {
 
   async list(ctx, taskId) {
     assertRole(ctx, "viewer");
-    const docs = await assessmentRepository.findByTaskId(ctx.workspaceId, taskId);
-    return docs.map(toDTO);
+    return (await assessmentRepository.findByTaskId(ctx.workspaceId, taskId)).map(toDTO);
   },
 
   async latest(ctx, taskId) {
     assertRole(ctx, "viewer");
-    const doc = await assessmentRepository.findLatestByTaskId(ctx.workspaceId, taskId);
-    return toDTO(doc);
+    return toDTO(await assessmentRepository.findLatestByTaskId(ctx.workspaceId, taskId));
   }
 };

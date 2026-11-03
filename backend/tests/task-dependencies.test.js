@@ -17,36 +17,21 @@ before(async () => {
   tB = await taskService.create(ctx, project.id, { title: "Task B" });
   tC = await taskService.create(ctx, project.id, { title: "Task C" });
 });
-
 after(async () => { await teardownTestDB(); });
 
 test("dependency creation, self-dependency and cycle detection", async () => {
-  await assert.rejects(
-    () => dependencyService.add(ctx, tA.id, { dependsOnTaskId: tA.id }),
-    { statusCode: 400 }
-  );
-  // B depends on A, C depends on B
+  await assert.rejects(() => dependencyService.add(ctx, tA.id, { dependsOnTaskId: tA.id }), { statusCode: 400 });
   await dependencyService.add(ctx, tB.id, { dependsOnTaskId: tA.id });
   await dependencyService.add(ctx, tC.id, { dependsOnTaskId: tB.id });
-
   // A depends on C should be rejected as cycle!
-  await assert.rejects(
-    () => dependencyService.add(ctx, tA.id, { dependsOnTaskId: tC.id }),
-    { statusCode: 400 }
-  );
+  await assert.rejects(() => dependencyService.add(ctx, tA.id, { dependsOnTaskId: tC.id }), { statusCode: 400 });
 });
 
 test("blocking completion when dependency unfinished; remove dependency", async () => {
-  // B depends on A. A is not done, so B cannot complete!
-  await assert.rejects(
-    () => taskService.transition(ctx, tB.id, "done"),
-    { statusCode: 400 }
-  );
-
+  await assert.rejects(() => taskService.transition(ctx, tB.id, "done"), { statusCode: 400 });
   const list = await dependencyService.list(ctx, tB.id);
   assert.equal(list.dependencies.length, 1);
   await dependencyService.remove(ctx, tB.id, list.dependencies[0].id);
-
   const doneB = await taskService.transition(ctx, tB.id, "done");
   assert.equal(doneB.status, "done");
 });

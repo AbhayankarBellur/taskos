@@ -9,21 +9,16 @@ import { taskService } from "../src/modules/tasks/task.service.js";
 let ctx, project;
 
 before(async () => {
-  const db = await setupTestDB();
-  setDB(db);
+  setDB(await setupTestDB());
   ctx = createTestCtx("owner");
   project = await projectService.create({ name: "Task Engine", key: "TOS" }, ctx);
 });
-
 after(async () => { await teardownTestDB(); });
 
 test("creates task with atomic key and retrieves it", async () => {
-  const task = await taskService.create(ctx, project.id, {
-    title: "First Task", description: "Desc", priority: "high"
-  });
+  const task = await taskService.create(ctx, project.id, { title: "First Task", description: "Desc", priority: "high" });
   assert.equal(task.key, "TOS-1");
   assert.equal(task.status, "backlog");
-
   const fetched = await taskService.get(ctx, task.id);
   assert.equal(fetched.title, "First Task");
 });
@@ -43,8 +38,5 @@ test("updates task and archives it; archived task is read-only", async () => {
   await taskService.update(ctx, task.id, { title: "Updated Title" });
   const archived = await taskService.archive(ctx, task.id);
   assert.equal(archived.archived, true);
-  await assert.rejects(
-    () => taskService.update(ctx, task.id, { title: "Fail Edit" }),
-    { statusCode: 409 }
-  );
+  await assert.rejects(() => taskService.update(ctx, task.id, { title: "Fail Edit" }), { statusCode: 409 });
 });

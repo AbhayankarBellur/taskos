@@ -21,10 +21,7 @@ export function createMemoryCollection() {
     },
     find(q = {}) {
       const res = docs.filter((d) => matchDoc(d, q));
-      const cursor = {
-        sort: () => cursor, skip: () => cursor, limit: () => cursor,
-        toArray: async () => [...res].reverse()
-      };
+      const cursor = { sort: () => cursor, skip: () => cursor, limit: () => cursor, toArray: async () => [...res].reverse() };
       return cursor;
     },
     async findOne(q = {}, opts = {}) {

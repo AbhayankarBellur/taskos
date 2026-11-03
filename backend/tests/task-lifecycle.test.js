@@ -14,7 +14,6 @@ before(async () => {
   ctx = createTestCtx("member");
   project = await projectService.create({ name: "Lifecycle", key: "LC" }, ctx);
 });
-
 after(async () => { await teardownTestDB(); });
 
 test("task assignment and invalid assignee check", async () => {
@@ -28,16 +27,11 @@ test("task assignment and invalid assignee check", async () => {
 test("status transition sets completedAt, blocking prevents done", async () => {
   const task = await taskService.create(ctx, project.id, { title: "Status Test" });
   await taskService.block(ctx, task.id, "Waiting on API");
-  await assert.rejects(
-    () => taskService.transition(ctx, task.id, "done"),
-    { statusCode: 400 }
-  );
-
+  await assert.rejects(() => taskService.transition(ctx, task.id, "done"), { statusCode: 400 });
   await taskService.unblock(ctx, task.id);
   const done = await taskService.transition(ctx, task.id, "done");
   assert.equal(done.status, "done");
   assert.ok(done.completedAt);
-
   const reopened = await taskService.transition(ctx, task.id, "in_progress");
   assert.equal(reopened.completedAt, null);
 });

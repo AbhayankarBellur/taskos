@@ -33,9 +33,7 @@ export const workspaceService = {
 
   async resolveContext(userId, workspaceId) {
     const _id = toObjectId(workspaceId, "Workspace");
-    const [membership, workspace] = await Promise.all([
-      memberRepository.find(_id, userId), workspaceRepository.findById(_id)
-    ]);
+    const [membership, workspace] = await Promise.all([memberRepository.find(_id, userId), workspaceRepository.findById(_id)]);
     if (!membership || !workspace) throw notFound("Workspace");
     return { userId, workspaceId: _id, role: membership.role, workspace: toWorkspace(workspace, membership.role) };
   },
@@ -43,7 +41,6 @@ export const workspaceService = {
   async update(ctx, input) {
     assertRole(ctx, "admin");
     const { name } = workspaceSchema.parse(input);
-    const updated = await workspaceRepository.update(ctx.workspaceId, { name, updatedAt: new Date() });
-    return toWorkspace(updated, ctx.role);
+    return toWorkspace(await workspaceRepository.update(ctx.workspaceId, { name, updatedAt: new Date() }), ctx.role);
   }
 };

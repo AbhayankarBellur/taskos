@@ -6,14 +6,9 @@ import type { Workspace } from "@/types/workspace";
 
 const STORAGE_KEY = "taskos.workspaceId";
 type WorkspaceValue = {
-  workspaces: Workspace[];
-  current: Workspace | null;
-  loading: boolean;
-  error: string | null;
-  select: (id: string) => void;
-  create: (name: string) => Promise<Workspace>;
-  rename: (name: string) => Promise<void>;
-  refresh: () => Promise<void>;
+  workspaces: Workspace[]; current: Workspace | null; loading: boolean; error: string | null;
+  select: (id: string) => void; create: (name: string) => Promise<Workspace>;
+  rename: (name: string) => Promise<void>; refresh: () => Promise<void>;
 };
 export const WorkspaceContext = createContext<WorkspaceValue | null>(null);
 const storedId = () => (typeof window === "undefined" ? null : localStorage.getItem(STORAGE_KEY));

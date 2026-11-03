@@ -17,20 +17,13 @@ before(async () => {
   project = await projectService.create({ name: "Assessments", key: "ASM" }, ctx);
   task = await taskService.create(ctx, project.id, { title: "Evaluate Me" });
 });
-
 after(async () => { await teardownTestDB(); });
 
 test("assessment creation and history retention", async () => {
-  await assessmentService.create(ctx, task.id, {
-    complexity: "low", storyPoints: 3, estimatedHours: 4, risk: "low", confidence: 90
-  });
-  await assessmentService.create(ctx, task.id, {
-    complexity: "high", storyPoints: 8, estimatedHours: 12, risk: "high", confidence: 75
-  });
-
+  await assessmentService.create(ctx, task.id, { complexity: "low", storyPoints: 3, estimatedHours: 4, risk: "low", confidence: 90 });
+  await assessmentService.create(ctx, task.id, { complexity: "high", storyPoints: 8, estimatedHours: 12, risk: "high", confidence: 75 });
   const all = await assessmentService.list(ctx, task.id);
   assert.equal(all.length, 2);
-
   const latest = await assessmentService.latest(ctx, task.id);
   assert.equal(latest.storyPoints, 8);
 });
@@ -40,11 +33,8 @@ test("comments and events audit history", async () => {
   const comments = await commentService.list(ctx, task.id);
   assert.equal(comments.length, 1);
   assert.equal(comments[0].content, "First comment");
-
   const events = await eventService.listByTaskId(ctx, task.id);
   assert.ok(events.length >= 3);
   const actions = events.map((e) => e.action);
-  assert.ok(actions.includes("task.created"));
-  assert.ok(actions.includes("task.assessed"));
-  assert.ok(actions.includes("task.commented"));
+  assert.ok(actions.includes("task.created") && actions.includes("task.assessed") && actions.includes("task.commented"));
 });

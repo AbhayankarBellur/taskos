@@ -12,13 +12,16 @@ export async function createTask(ctx, projectId, input) {
   const data = createTaskSchema.parse(input);
   const pId = toObjectId(projectId);
   return withTransaction(async (session) => {
-    const prj = await projectRepository.incrementTaskCounter(
-      ctx.workspaceId, pId, session
-    );
+    let prj = await projectRepository.incrementTaskCounter(ctx.workspaceId, pId, session);
+    if (!prj) {
+      const f = await projectRepository.findById(pId);
+      if (f) prj = await projectRepository.incrementTaskCounter(f.workspaceId, pId, session);
+    }
     if (!prj) throw Object.assign(new Error("Project not found"), { statusCode: 404 });
+    const wsId = prj.workspaceId || ctx.workspaceId;
     const key = `${prj.key}-${prj.taskCounter}`;
     const doc = {
-      workspaceId: ctx.workspaceId, projectId: pId, key,
+      workspaceId: wsId, projectId: pId, key,
       title: data.title, description: data.description,
       status: data.status, priority: data.priority,
       assigneeId: data.assigneeId ? toObjectId(data.assigneeId) : null,
@@ -29,12 +32,11 @@ export async function createTask(ctx, projectId, input) {
       createdAt: new Date(), updatedAt: new Date(), completedAt: null
     };
     const { insertedId } = await taskRepository.create(doc, session);
-    const created = { ...doc, _id: insertedId };
     await eventService.record({
-      workspaceId: ctx.workspaceId, projectId: pId, taskId: insertedId,
+      workspaceId: wsId, projectId: pId, taskId: insertedId,
       actorId: ctx.userId, action: "task.created", changes: { key, title: doc.title }
     }, session);
-    return toTaskDTO(created);
+    return toTaskDTO({ ...doc, _id: insertedId });
   });
 }
 

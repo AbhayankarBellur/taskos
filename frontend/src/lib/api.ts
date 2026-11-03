@@ -14,6 +14,7 @@ export class ApiError extends Error {
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   if (!API_URL) throw new ApiError("API URL is not configured", 0);
+  const wsId = typeof window !== "undefined" ? localStorage.getItem("taskos.workspaceId") : null;
 
   const response = await fetch(`${API_URL}/api/v1${path}`, {
     ...options,
@@ -21,6 +22,7 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     headers: {
       "Content-Type": "application/json",
       ...(csrfToken && { "X-CSRF-Token": csrfToken }),
+      ...(wsId && { "X-Workspace-Id": wsId }),
       ...options.headers
     }
   });

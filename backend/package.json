@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
-    "test": "node --test --test-force-exit --test-concurrency=1 \"test/**/*.test.js\""
+    "test": "node --test",
+    "backfill": "node scripts/backfill-project-keys.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

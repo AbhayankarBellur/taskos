@@ -12,7 +12,8 @@ export const projectController = {
   },
 
   get: async (req, res) => {
-    const project = await projectService.get(req.ctx, req.params.projectId);
+    const id = req.params.projectId || req.params.id;
+    const project = await projectService.get(req.ctx, id);
     res.json({ success: true, data: project });
   }
 };

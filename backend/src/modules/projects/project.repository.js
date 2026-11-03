@@ -1,25 +1,43 @@
+import { toObjectId } from "../../utils/object-id.js";
 import { getDB } from "../../config/database.js";
 
-const collection = () => getDB().collection("projects");
+const col = () => getDB().collection("projects");
 const LEGACY = { workspaceId: null };
 
 export const projectRepository = {
-  create: (data) => collection().insertOne(data),
+  create: (data) => col().insertOne(data),
 
-  findAll: (workspaceId) =>
-    collection().find({ workspaceId }).sort({ createdAt: -1 }).toArray(),
+  findAll: (wsId) =>
+    col().find(wsId ? { workspaceId: toObjectId(wsId) } : {}).sort({ createdAt: -1 }).toArray(),
 
-  findById: (workspaceId, _id) => collection().findOne({ _id, workspaceId }),
+  findById: (wsId, id) => {
+    const targetId = toObjectId(id || wsId);
+    const q = { _id: targetId };
+    if (id && wsId) q.workspaceId = toObjectId(wsId);
+    return col().findOne(q);
+  },
 
-  update: (workspaceId, _id, data) =>
-    collection().updateOne({ _id, workspaceId }, { $set: data }),
+  findByKey: (wsId, key) =>
+    col().findOne({ workspaceId: toObjectId(wsId), key }),
 
-  delete: (workspaceId, _id) => collection().deleteOne({ _id, workspaceId }),
+  incrementTaskCounter: (wsId, id, session) =>
+    col().findOneAndUpdate(
+      { _id: toObjectId(id), workspaceId: toObjectId(wsId) },
+      { $inc: { taskCounter: 1 } },
+      { returnDocument: "after", session }
+    ),
 
-  findLegacy: () => collection().find(LEGACY).toArray(),
+  update: (wsId, id, data) =>
+    col().updateOne(
+      { _id: toObjectId(id || wsId), ...(id ? { workspaceId: toObjectId(wsId) } : {}) },
+      { $set: data }
+    ),
+
+  delete: (wsId, id) =>
+    col().deleteOne({ _id: toObjectId(id || wsId), ...(id ? { workspaceId: toObjectId(wsId) } : {}) }),
+
+  findLegacy: () => col().find(LEGACY).toArray(),
 
   assignLegacy: (workspaceId, createdBy) =>
-    collection().updateMany(LEGACY, {
-      $set: { workspaceId, createdBy, updatedAt: new Date() }
-    })
+    col().updateMany(LEGACY, { $set: { workspaceId, createdBy, updatedAt: new Date() } })
 };

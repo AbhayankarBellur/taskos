@@ -1,11 +1,12 @@
 import { ObjectId } from "mongodb";
-import { notFound } from "./app-error.js";
-
-const HEX_ID = /^[0-9a-fA-F]{24}$/;
 
 export function toObjectId(id, label = "Resource") {
-  if (typeof id !== "string" || !HEX_ID.test(id)) throw notFound(label);
-  return new ObjectId(id);
+  if (!id) return null;
+  if (id instanceof ObjectId) return id;
+  if (typeof id === "string" && ObjectId.isValid(id)) return new ObjectId(id);
+  const err = new Error(`Invalid ObjectId for ${label}: ${id}`);
+  err.statusCode = 400;
+  throw err;
 }
 
 export const idString = (value) => (value ? value.toString() : null);

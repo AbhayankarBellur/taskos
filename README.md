@@ -1,18 +1,31 @@
-# taskos
+# TaskOS
 
 Lightweight Jira-like task management application with a reusable MCP server.
 
 - `backend/` — Node.js + Express (ESM) + MongoDB Atlas
 - `frontend/` — Next.js + React + TypeScript + Tailwind CSS
 
+## Phase 3 Core Task Engine
+
+Features:
+- Tasks CRUD, archive, status transitions, assignment, blockers
+- Assessments history (complexity, story points, hours, risk, confidence)
+- Subtasks and dependency management with cycle detection
+- Comments & audit event timeline (`task_events`)
+- Atomic per-project sequential task keys (e.g. `TOS-1`, `TOS-2`)
+- Project keys backfill script: `npm run backfill` (or `node scripts/backfill-project-keys.js`)
+
 ## Local development
 
 ```bash
 cd backend && cp .env.example .env   # fill in MONGODB_URI and JWT_SECRET
 npm install && npm run dev
+npm test
 
 cd frontend && cp .env.example .env.local
 npm install && npm run dev
+npm run lint
+npm run build
 ```
 
 Generate a JWT secret with `openssl rand -base64 48` (or

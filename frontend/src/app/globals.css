@@ -4,6 +4,12 @@
   --font-sans: var(--font-geist-sans);
 }
 
+@layer base {
+  *, ::before, ::after {
+    border-color: var(--color-gray-200);
+  }
+}
+
 body {
   @apply bg-gray-50 font-sans text-gray-900;
 }

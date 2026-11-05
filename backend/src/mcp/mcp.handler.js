@@ -6,7 +6,7 @@ const handler = createMcpHandler(() => createServerInstance());
 const nodeHandler = toNodeHandler(handler);
 
 export function handleMcpRequest(req, res) {
-  return nodeHandler(req, res);
+  return nodeHandler(req, res, req.body);
 }
 
 export function closeMcpHandler() {

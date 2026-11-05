@@ -3,12 +3,13 @@ import { getMcpConfig } from "./mcp.config.js";
 import { workspaceService } from "../modules/workspaces/workspace.service.js";
 import { toObjectId } from "../utils/object-id.js";
 import { getDB } from "../config/database.js";
+import { MCP_SCOPES } from "./mcp.scopes.js";
 
 export const mcpContextStorage = new AsyncLocalStorage();
 
 const DEF_U = "654321654321654321654321";
 const DEF_W = "123456123456123456123456";
-const ALL_SCOPES = ["projects:read", "tasks:read", "reports:read"];
+const ALL_SCOPES = Object.values(MCP_SCOPES);
 
 export function createTestContext(overrides = {}) {
   const userId = toObjectId(overrides.userId || DEF_U);

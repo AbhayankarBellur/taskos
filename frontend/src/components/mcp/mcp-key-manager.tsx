@@ -26,13 +26,13 @@ export function McpKeyManager({ workspaceId }: { workspaceId: string }) {
   };
 
   return (
-    <div className="rounded-xl border bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-bold">MCP API Keys</h3>
-          <p className="text-xs text-zinc-500">Connect AI clients (Claude Desktop, Cursor) to this workspace.</p>
+          <h3 className="text-lg font-bold text-gray-900">MCP API Keys</h3>
+          <p className="text-xs text-gray-500">Connect AI clients (Claude Desktop, Cursor) to this workspace.</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="rounded bg-indigo-600 px-3 py-1.5 text-xs text-white hover:bg-indigo-700">
+        <button onClick={() => setShowCreate(true)} className="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">
           Create Key
         </button>
       </div>

@@ -9,7 +9,8 @@ export function mcpSecurityMiddleware(req, res, next) {
     });
   }
 
-  if (config.isProd || !config.devMode) {
+  const hasBearer = req.headers.authorization?.startsWith("Bearer ");
+  if (!hasBearer && (config.isProd || !config.devMode)) {
     return res.status(401).json({
       jsonrpc: "2.0", error: { code: -32001, message: "MCP authentication required in production" }, id: null
     });

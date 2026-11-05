@@ -1,5 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import { registerAllTools } from "./mcp.tools.js";
+import { registerAllResources } from "./resources/resource.registry.js";
+import { registerAllPrompts } from "./prompts/prompt.registry.js";
 import { resolveMcpContext } from "./mcp.context.js";
 
 const INSTRUCTIONS = "TaskOS is a project and task management platform that exposes project, task, workflow, and collaboration capabilities to AI clients through the Model Context Protocol.";
@@ -11,5 +13,7 @@ export async function createServerInstance(context) {
     { instructions: INSTRUCTIONS }
   );
   registerAllTools(server, ctx);
+  registerAllResources(server, ctx);
+  registerAllPrompts(server, ctx);
   return server;
 }

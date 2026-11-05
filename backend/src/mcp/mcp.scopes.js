@@ -6,3 +6,9 @@ export function assertMcpScope(ctx, requiredScope) {
     throw err;
   }
 }
+
+export function assertMcpScopes(ctx, scopes = []) {
+  for (const s of scopes) {
+    assertMcpScope(ctx, s);
+  }
+}
